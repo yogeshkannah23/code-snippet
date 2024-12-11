@@ -1,9 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from langchain.chat_models import ChatOpenAI
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel as PydanticBaseModel
 import os
 import tempfile
 import shutil
@@ -15,6 +16,8 @@ load_dotenv()
 app = FastAPI()
 os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
+class Prompt(PydanticBaseModel):
+    prompt: str    
 
 class Output(BaseModel):
     html_code: str = Field(description="Give me the html code for the title")
@@ -25,8 +28,10 @@ class Output(BaseModel):
         self.css_code = re.sub(r'\\n|\\t', '', self.css_code)
 
 
-@app.get("/app/code/{prompt}")
-def get_code(prompt):
+@app.post("/app/code/")
+def get_code(request: Prompt):
+    prompt = request.prompt
+    
     model = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
     structured_llm = model.with_structured_output(Output)
     chat_prompt = ChatPromptTemplate.from_messages([
