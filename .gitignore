@@ -1,0 +1,6 @@
+venv
+.env
+project
+__pycache__
+env
+.vscode

@@ -10,11 +10,23 @@ import tempfile
 import shutil
 import re
 import uuid
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI()
 os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class Prompt(PydanticBaseModel):
     prompt: str    
