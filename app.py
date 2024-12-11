@@ -40,7 +40,7 @@ class Output(BaseModel):
         self.css_code = re.sub(r'\\n|\\t', '', self.css_code)
 
 
-@app.post("/app/code/")
+@app.post("/app/code")
 def get_code(request: Prompt):
     prompt = request.prompt
     
